@@ -2,7 +2,7 @@ import java.util.Stack;
 
 /**
  * BorrowStack — Individual Task 2: Borrowing History
- * author Nadiyah Aqilah Putri 24211204
+ * author: Nadiyah Aqilah Putri 24211204
  * 
  * Uses a Stack<Book> to record every book a student borrows.
  * The most recently borrowed book always appears at the top (LIFO order).
