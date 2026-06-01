@@ -1,6 +1,6 @@
 /**
  * RecordFinder — Individual Task 3: Record Finder
- * author: [Your Name] [Your NIM]
+ * author: Abdul Malik Rasyid
  *
  * Implements a recursive search function within the BST
  * to find books by ISBN number.
