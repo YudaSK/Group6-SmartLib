@@ -25,4 +25,26 @@ public class BookBST {
         // Return the unchanged node pointer to reconnect the tree structure
         return currentRoot;
     }
+
+       public Book getRoot(){
+        return root;
+    }
+
+    // Added to print all books sorted by ISBN
+    public void printAllBooks() {
+        if (root == null) {
+            System.out.println("  The catalogue is empty.");
+            return;
+        }
+        System.out.println("  No. | ISBN          | Title                          | Author");
+        System.out.println("  ----|---------------|--------------------------------|------------------");
+        printInOrder(root, new int[]{1});
+    }
+    private void printInOrder(Book node, int[] counter) {
+        if (node == null) return;
+        printInOrder(node.left, counter);
+        System.out.printf("  %-3d | %-13d | %-30s | %s%n",
+                counter[0]++, node.isbn, node.title, node.author);
+        printInOrder(node.right, counter);
+    }
 }
