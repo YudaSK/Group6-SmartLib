@@ -4,60 +4,32 @@
  *
  * Implements a recursive search function within the BST
  * to find books by ISBN number.
- *
- * How it works:
- * - Uses the BST property: left < root < right (by ISBN)
- * - Recursively traverses left or right subtree based on ISBN comparison
- * - Returns the Book object if found, or null if not found
  */
 public class RecordFinder {
 
-    // Reference to the root of the BST (shared from BookBST)
-    private Book root;
+    // Dependency on the catalogue tree itself
+    private BookBST catalogue;
 
-    // Constructor — accepts the root node from BookBST
-    public RecordFinder(Book root) {
-        this.root = root;
+    // Constructor — accepts the BookBST object to always access the latest root
+    public RecordFinder(BookBST catalogue) {
+        this.catalogue = catalogue;
     }
 
     /**
      * findByISBN(int isbn)
-     * Public method called by the main system interface.
-     * Starts the recursive search from the root and prints the result.
+     * Starts the recursive search from the dynamic root.
      */
     public Book findByISBN(int isbn) {
-        System.out.println("\n--- Searching for ISBN: " + isbn + " ---");
-        Book result = searchRecursive(root, isbn);
-
-        if (result != null) {
-            System.out.println("Book Found!");
-            System.out.println("------------------------------");
-            System.out.println("  ISBN   : " + result.isbn);
-            System.out.println("  Title  : " + result.title);
-            System.out.println("  Author : " + result.author);
-            System.out.println("------------------------------");
-        } else {
-            System.out.println("Book with ISBN " + isbn + " not found in the catalogue.");
-        }
-
-        return result;
+        // Dynamically fetches the root from the catalogue
+        return searchRecursive(catalogue.getRoot(), isbn);
     }
 
     /**
      * searchRecursive(Book currentRoot, int isbn)
      * Private recursive method — Information Hiding principle.
-     * Hides the tree traversal logic from outside classes.
-     *
-     * Base cases:
-     *   1. currentRoot == null — ISBN not found, return null
-     *   2. isbn == currentRoot.isbn — match found, return this node
-     *
-     * Recursive cases:
-     *   - isbn < currentRoot.isbn — search left subtree
-     *   - isbn > currentRoot.isbn — search right subtree
      */
     private Book searchRecursive(Book currentRoot, int isbn) {
-        // Base case 1: reached a null node, ISBN does not exist in the tree
+        // Base case 1: reached a null node, ISBN does not exist
         if (currentRoot == null) {
             return null;
         }

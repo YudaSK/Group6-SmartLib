@@ -4,33 +4,47 @@ import java.util.Scanner;
 public class SmartLibrary implements LibraryADT {
 
     private final BookBST catalogue = new BookBST();
-    private final BorrowStack history   = new BorrowStack();
-    private RecordFinder finder    = new RecordFinder(null);
+    private final BorrowStack history = new BorrowStack();
+    
+    // BUG FIX: Initialize RecordFinder ONLY ONCE, passing the catalogue reference
+    private final RecordFinder finder = new RecordFinder(catalogue);
 
     // LibraryADT implementations
 
     @Override
     public void addBook(int isbn, String title, String author) {
         catalogue.insert(isbn, title, author);
-        finder = new RecordFinder(catalogue.getRoot());
+        // BUG FIX: Removed the redundant 'finder = new RecordFinder(...)' instantiation
         System.out.println("  \"" + title + "\" by " + author + " added to catalogue.");
     }
 
     @Override
     public void searchBook(int isbn) {
-        finder.findByISBN(isbn);
+        System.out.println("\n  --- Searching for ISBN: " + isbn + " ---");
+        Book result = finder.findByISBN(isbn);
+
+        // BUG FIX: UI logic moved here from RecordFinder
+        if (result != null) {
+            System.out.println("  Book Found!");
+            System.out.println("  ------------------------------");
+            System.out.println("    ISBN   : " + result.isbn);
+            System.out.println("    Title  : " + result.title);
+            System.out.println("    Author : " + result.author);
+            System.out.println("  ------------------------------");
+        } else {
+            System.out.println("  Book with ISBN " + isbn + " not found in the catalogue.");
+        }
     }
 
-    /**
-     * Borrows a book: uses RecordFinder to locate it in the BST,
-     * then pushes it onto the BorrowStack.
-     */
     @Override
     public void borrowBook(int isbn) {
         Book b = finder.findByISBN(isbn);
         if (b != null) {
             history.push(b);
             System.out.println("  \"" + b.title + "\" has been borrowed successfully.");
+        } else {
+            // Added error handling if the user tries to borrow a non-existent book
+            System.out.println("  Borrow failed. Book with ISBN " + isbn + " not found.");
         }
     }
 
@@ -44,9 +58,7 @@ public class SmartLibrary implements LibraryADT {
         catalogue.printAllBooks();
     }
 
-
     // Console Interface
-
     public void runMenu() {
         Scanner sc = new Scanner(System.in);
         printBanner();
@@ -73,7 +85,6 @@ public class SmartLibrary implements LibraryADT {
     }
 
     // Menu Handlers
-
     private void handleAddBook(Scanner sc) {
         System.out.println("\n  -- ADD BOOK --");
         int isbn = readISBN(sc, "  Enter ISBN   : ");
@@ -101,8 +112,7 @@ public class SmartLibrary implements LibraryADT {
         borrowBook(isbn);
     }
 
-    // UI
-
+    // UI Formatting Methods
     private void printBanner() {
         System.out.println();
         System.out.println("  ==========================================");
@@ -128,11 +138,11 @@ public class SmartLibrary implements LibraryADT {
             System.out.print(prompt);
             try {
                 int val = sc.nextInt();
-                sc.nextLine();
+                sc.nextLine(); // Consume newline
                 if (val >= min && val <= max) return val;
                 System.out.println("  Please enter a number between " + min + " and " + max + ".");
             } catch (InputMismatchException e) {
-                sc.nextLine();
+                sc.nextLine(); // Clear the invalid input buffer
                 System.out.println("  Invalid input — please enter a whole number.");
             }
         }
@@ -142,14 +152,14 @@ public class SmartLibrary implements LibraryADT {
         System.out.print(prompt);
         try {
             int val = sc.nextInt();
-            sc.nextLine();
+            sc.nextLine(); // Consume newline
             if (val <= 0) {
                 System.out.println("  ISBN must be a positive number.");
                 return -1;
             }
             return val;
         } catch (InputMismatchException e) {
-            sc.nextLine();
+            sc.nextLine(); // Clear the invalid input buffer
             System.out.println("  Invalid ISBN — must be a whole number.");
             return -1;
         }
@@ -162,7 +172,6 @@ public class SmartLibrary implements LibraryADT {
     }
 
     // MAIN RUN
-
     public static void main(String[] args) {
         new SmartLibrary().runMenu();
     }
