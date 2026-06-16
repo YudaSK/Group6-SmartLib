@@ -18,7 +18,7 @@ public class BorrowStack {
      */
     public void push(Book book) {
         history.push(book);
-        System.out.println("\"" + book.title + "\" added to your borrowing history.");
+        System.out.println("  \"" + book.title + "\" added to your borrowing history.");
     }
 
     /**
